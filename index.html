@@ -10,23 +10,18 @@
       padding: 0;
       height: 100%;
       overflow-x: hidden;
-    }
-
-    body {
       font-family: 'Tahoma', sans-serif;
-      color: white;
-      text-align: center;
-      padding: 30px;
-      position: relative;
-      background-color: #000000; /* خلفية سوداء */
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .counter-container {
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      gap: 15px;
-      margin: 20px 0;
+      gap: 20px;
     }
 
     .counter-circle {
@@ -38,18 +33,53 @@
       align-items: center;
       justify-content: center;
       font-size: 2em;
+      color: white;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
       cursor: pointer;
       user-select: none;
       transition: transform 0.1s ease;
+      position: relative;
+      overflow: hidden;
     }
 
     .counter-circle:active {
       transform: scale(0.95);
     }
 
+    .counter-circle::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.4);
+      opacity: 0;
+      transform: scale(0);
+      animation: none;
+      pointer-events: none;
+    }
+
+    .counter-circle.clicked::after {
+      animation: pulse-effect 0.5s ease-out;
+    }
+
+    @keyframes pulse-effect {
+      0% {
+        opacity: 0.5;
+        transform: scale(0);
+      }
+      50% {
+        opacity: 0.3;
+        transform: scale(1.2);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1.8);
+      }
+    }
+
     .reset-btn {
-      padding: 10px 15px;
+      padding: 10px 20px;
       background-color: #ff5c5c;
       color: white;
       border: none;
@@ -62,51 +92,31 @@
     .reset-btn:hover {
       background-color: #e04848;
     }
-
-    .azkar-list {
-      text-align: right;
-      margin-top: 30px;
-      padding: 0 10px;
-      max-width: 600px;
-      margin-inline: auto;
-      background: rgba(0, 0, 0, 0.4);
-      border-radius: 15px;
-      padding: 20px;
-    }
-
-    .azkar-list ol {
-      line-height: 2;
-      font-size: 1.1em;
-      color: #fff;
-    }
   </style>
 </head>
 <body>
 
-  <h1>مسبحة إلكترونية</h1>
-
   <div class="counter-container">
-    <div class="counter-circle" onclick="increaseCount()">العدد: <span id="count">0</span></div>
-    <button class="reset-btn" onclick="resetCount()">Reset</button>
-  </div>
-
-  <div class="azkar-list">
-    <ol>
-      <li>اللهم صل على محمد وعلى آل محمد كما صليت على إبراهيم وعلى آل إبراهيم إنك حميد مجيد، وبارك على محمد وعلى آل محمد كما باركت على إبراهيم وعلى آل إبراهيم إنك حميد مجيد (100 مرة)</li>
-      <li>سبحان الله وبحمده (100 مرة)</li>
-      <li>لا حول ولا قوة إلا بالله عدد ما شئت</li>
-      <li>لا إله إلا الله عدد ما شئت</li>
-      <li>استغفر الله العظيم الذي لا إله إلا هو الحي القيوم وأتوب إليه (3 مرات)</li>
-      <li>لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير (100 مرة)</li>
-    </ol>
+    <div class="counter-circle" onclick="increaseCount()">
+      <span id="count">0</span>
+    </div>
+    <button class="reset-btn" onclick="resetCount()">إعادة</button>
   </div>
 
   <script>
     let count = 0;
+    const maxCount = 20000;
 
     function increaseCount() {
-      count++;
-      document.getElementById("count").textContent = count;
+      if (count < maxCount) {
+        count++;
+        document.getElementById("count").textContent = count;
+
+        const circle = document.querySelector(".counter-circle");
+        circle.classList.remove("clicked");
+        void circle.offsetWidth; // لإعادة تشغيل الأنيميشن
+        circle.classList.add("clicked");
+      }
     }
 
     function resetCount() {
